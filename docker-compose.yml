@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  redis:
+    image: redis:5.0.4
+    container_name: cluster-test-redis
+    # ./docker/redis の内容を /data/conf にマウント
+    volumes:
+        - ./redis/conf/:/data/conf
+        - ./redis/log/:/data/log
+    # コンテナが起動したら、
+    # redis-serverとクラスター・レプリケーションの設定を行うshellスクリプトを実行。
+    # その後、常時起動のコマンドを走らせる。
+    command: bash -c "/bin/bash /data/conf/redis.sh && while true; do echo 1; sleep 1; done"
+    ports:
+        - 6000:6000
+        - 6001:6001
+        - 6002:6002
+        - 6003:6003
+        - 6004:6004
+        - 6005:6005
+#     #shellスクリプト内でipを使用するのでここで設定。
+#     networks:
+#         app_net:
+#             ipv4_address: 172.16.239.10
+
+# networks:
+#     app_net:
+#         driver: bridge
+#         ipam:
+#             driver: default
+#             config:
+#                 - subnet: 172.16.239.0/24
+#                   gateway: 172.16.239.1
